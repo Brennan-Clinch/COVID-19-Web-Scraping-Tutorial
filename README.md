@@ -1,16 +1,7 @@
-Project 1
+API Interaction: COVID-19
 ================
 Brennan Clinch
-9/26/2021
-
-d
-
-``` r
-rmarkdown::render("C:/Users/JCCLI/OneDrive/Documents/Repo/Project1/Project1.Rmd",
-                  output_format = "github_document",
-                  output_options=list(html_preview= FALSE, keep_html= FALSE)
-)
-```
+10/4/2021
 
 ## Introduction
 
@@ -71,18 +62,35 @@ This is another simple function I made that takes in the `dayone`
 endpoint and let’s me customize my endpoint I want to get a data frame
 for data since the beginning of the COVID-19 pandemic for either
 recovered or confirmed cases by typing in what I want in
-parentheses(`confirmed` or `recovered`) after calling the function
+parentheses(`confirmed` or `recovered` or `deaths`) after calling the
+function. If I don’t type in anything it returns the whole data frame
+with `confirmed`, `recovered`, and `deaths`.f
 
 ``` r
 dayonestatus <- function(type = "all"){
+  if (type != "all" & type %in% c("recovered", "deaths", "confirmed")){
   baseurl <- "https://api.covid19api.com/dayone/country/canada"
   fullURL <- paste0(baseurl, "/status/", type)
   output <- fromJSON(fullURL)
+  }
+  else if (type == "all"){
+    baseurl <- "https://api.covid19api.com/dayone/country/canada"
+    output <- fromJSON(baseurl)
+  }
+  else{
+    stop("Error: Please specify area of interest for COVID.")
+  }
   return(output)
 }
 ```
 
 `timeframe`
+
+This is a helpful custom url function for the
+`Live By Country And Status After Date` endpoint of the COVID API. It
+let’s you pick the country (uses the slug (check `countrydic` function))
+and then let’s you pick the dates you want the COVID data from for
+confirmed cases.
 
 ``` r
 timeframe <- function(country = "all", year = "all", date1 = "all", date2 = "all"){
@@ -93,36 +101,10 @@ timeframe <- function(country = "all", year = "all", date1 = "all", date2 = "all
   date2url <- date2
   fullurl <- paste0(baseurl,country,"/status/confirmed?from=",yearurl,"-",date1url,"T00:00:00Z&to=",yearurl,"-",date2url,"T00:00:00Z")
   output <- fromJSON(fullurl)
-  if (year != 2020:2021 ){
-    stop("Error with year")
+  if ( year != 2020:2021 | country != output$Slug ){
+    stop("Error, please try again.")
   }
   return(output)
-}
-```
-
-`periodCA`
-
-This function connects with `Day one Total` endpoint which takes in all
-data for the confirmed number of cases since the pandemic began. In this
-case we are looking at data for Canada. This function creates an updated
-data frame that can give us the data for each season of the year since
-the pandemic began.
-
-``` r
-periodCA <- function(x){
- COVID4 <- fromJSON("https://api.covid19api.com/dayone/country/canada/status/recovered")
- Period <- COVID4$Date
- Cases <- COVID4$Cases
-
- output <- COVID4 %>% mutate(Period = case_when(Cases < 1449 ~  "Winter 2020",
-  Cases %in% 1773:95240 ~  "Spring 2020",
-  Cases %in% 95564:131294 ~ "Summer 2020",
-  Cases %in% 132449:430591 ~"Fall 2020",
-  Cases %in% 435801:796896 ~  "Winter 2020-2021",
-  Cases %in% 801299:1186180~ "Spring 2021",
-  Cases >1186180~ "Summer 2021"
-))
- return(output)
 }
 ```
 
@@ -144,7 +126,12 @@ Illinoistype <- function(type= "all", Province = "Illinois"){
 }
 ```
 
-`NorthAmerica`
+`NorthAmerica` I made this simple function to interact with the `total`
+endpoint and let you choose which country of North America you want a
+data frame returned for COVID deaths, recovered, confirmed cases, and
+active cases. It then returns a customized endpoint for `total` endpoint
+url so you specify either united-states or canada and it returns a
+dataframe for the total amount of the things mentioned above.
 
 ``` r
 NorthAmerica <- function(type = "all", Country = "all"){
@@ -204,9 +191,11 @@ countrydic <- function(type = "all"){
 }
 ```
 
-<https://api.covid19api.com/dayone/country/south-africa/status/confirmed/live>
-
 `COVIDapi`
+
+This is my wrapper function used to call all of the functions that I
+have made to easily reference them which is especially useful in my next
+section which is my data analysis.
 
 ``` r
 COVIDapi <- function(func, ...){
@@ -220,7 +209,7 @@ COVIDapi <- function(func, ...){
     output <- Illinoistype(type = c("Confirmed", "Deaths"))
   }
   else if (func == "dayonestatus"){
-    output <- dayonestatus(type = "confirmed")
+    output <- dayonestatus(type = "all")
   }
   else if (func == "countrydic"){
     output <- countrydic(...)
@@ -236,7 +225,7 @@ COVIDapi <- function(func, ...){
 }
 ```
 
-\#\#Exploratory data analysis
+\#Exploratory data analysis
 
 Let’s first look at a numeric summary of our periodical data for each
 season for Canada. Note that we must first convert the Total number of
@@ -257,20 +246,46 @@ data, so this updated data frame contains values up till the date prior
 to the current date.
 
 ``` r
-CA <- COVIDapi("dayonestatus")
-CA <- CA %>% mutate(Period = case_when(Cases < 1449 ~  "Winter 2020",
-  Cases %in% 1773:95240~  "Spring 2020",
-  Cases %in% 95564:131294~ "Summer 2020",
-  Cases %in% 132449:430591~"Fall 2020",
-  Cases %in% 435801:796896~  "Winter 2020-2021",
-  Cases %in% 801299:1186180~ "Spring 2021",
-  Cases %in% 1186180:1309938~ "Summer 2021",
-  Cases > 1309938~ "Fall 2021"
-))
-for (i in 1:max(row_number(CA$Cases))){
-  CA$Cases[i] <- CA$Cases[i+1]-CA$Cases[i]
+Canada <- COVIDapi("dayonestatus")
+Canada <- Canada %>% mutate(Period = case_when(Confirmed < 1449 ~  "Winter 2020",
+   Confirmed %in% 1773:95240~  "Spring 2020",
+   Confirmed %in% 95564:131294~ "Summer 2020",
+   Confirmed %in% 132449:430591~"Fall 2020",
+   Confirmed %in% 435801:796896~  "Winter 2020-2021",
+   Confirmed %in% 801299:1186180~ "Spring 2021",
+   Confirmed %in% 1186180:1309938~ "Summer 2021",
+   Confirmed > 1309938~ "Fall 2021"
+ ), Month = case_when(Active %in% 1:3~"Jan 2020",
+   Confirmed %in% 4:21~ "Feb 2020",
+   Confirmed %in% 22:8543~ "Mar 2020",
+   Confirmed %in% 9760:51348~"Apr 2020",
+   Confirmed %in% 51349:85464~"May 2020",
+   Confirmed %in% 85465:97908~"Jun 2020",
+   Confirmed %in% 98106:107441~"Jul 2020",
+   Confirmed %in% 107442:116934~"Aug 2020",
+   Confirmed %in% 116935:144661~"Sep 2020",
+   Confirmed %in% 144662:210514~ "Oct 2020",
+   Confirmed %in% 210515:324505~"Nov 2020",
+   Confirmed %in% 324506:486975~"Dec 2020",
+   Confirmed %in% 486976:659501~"Jan 2021",
+   Confirmed %in% 659502:737713~"Feb 2021",
+   Confirmed %in% 737714:841135~"Mar 2021",
+   Confirmed %in% 841136:1038545~"Apr 2021",
+   Confirmed %in% 1038546:1162279~"May 2021",
+   Confirmed %in% 1162280:1191157~"Jun 2021",
+   Confirmed %in% 1191157:1204136~"Jul 2021",
+   Confirmed %in% 1204136:1254136~"Aug 2021",
+   Confirmed > 1254136~"Sep 2021"))
+for (i in 1:max(row_number(Canada$Confirmed))){
+  Canada$Confirmed[i] <- Canada$Confirmed[i+1]-Canada$Confirmed[i]
 }
-CA <- na.omit(CA)
+for (i in 1:max(row_number(Canada$Deaths))){
+  Canada$Deaths[i] <- Canada$Deaths[i+1]-Canada$Deaths[i]
+}
+for (i in 1:max(row_number(Canada$Active))){
+  Canada$Active[i]<- Canada$Active[i+1]-Canada$Active[i]
+}
+Canada <- na.omit(Canada)
 ```
 
 Since I just got my data frame `CA` set up, I will now proceed with my
@@ -281,22 +296,22 @@ for creating the boxplot.
 
 ``` r
 library(ggplot2)
-g <- ggplot(data = CA, aes(x = Cases))
+g <- ggplot(data = Canada, aes(x = Confirmed))
 g+geom_boxplot()
 ```
 
-![](Project1_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
-g <- ggplot(data = CA, aes(x = Period, y = Cases))
-g+geom_point(aes(col = Cases), position = "jitter", size = 1)+
-  geom_boxplot(aes(col = Cases, alpha = 0.5))+
+g <- ggplot(data = Canada, aes(x = Period, y = Confirmed))
+g+geom_point(aes(col = Confirmed), position = "jitter", size = 1)+
+  geom_boxplot(aes(col = Confirmed, alpha = 0.5))+
   theme(axis.text.x = element_text(angle = 45))+
   labs(title = "Boxplots for Covid cases in Canada for each season")
 ```
 
-![](Project1_files/figure-gfm/unnamed-chunk-12-2.png)<!-- --> Based on
-the 2 boxplots, it is clearly shown that for the total distribution of
+![](README_files/figure-gfm/unnamed-chunk-11-2.png)<!-- --> Based on the
+2 boxplots, it is clearly shown that for the total distribution of
 COVID-19 cases in Canada, it is noted that the distribution of cases
 over the whole pandemic is skewed a little to the right with some
 outlying daily cases over 7500 and close to 10000. For the 2nd plot with
@@ -313,8 +328,21 @@ number of cases on average with spring of 2021 having the highest spread
 of cases since it’s standard deviation was so high.
 
 ``` r
-CA  %>% group_by(Period) %>% summarise("Min." = min(Cases), "1st Quartile" = quantile(Cases,0.25,na.rm = TRUE), "Mean" =mean(Cases), "Median" = median(Cases), "3rd Quartile"= quantile(Cases,0.75,na.rm=TRUE), "Max." = max(Cases), "standard deviation." = sd(Cases))
+summary <- Canada  %>% group_by(Period) %>% summarise("Min." = min(Confirmed), "1st Quartile" = quantile(Confirmed,0.25,na.rm = TRUE), "Mean" =mean(Confirmed), "Median" = median(Confirmed), "3rd Quartile"= quantile(Confirmed,0.75,na.rm=TRUE), "Max." = max(Confirmed), "standard deviation." = sd(Confirmed))
+summary
 ```
+
+    ## # A tibble: 8 x 8
+    ##   Period            Min. `1st Quartile`   Mean Median `3rd Quartile`  Max. `standard devia~
+    ##   <chr>            <int>          <dbl>  <dbl>  <dbl>          <dbl> <int>            <dbl>
+    ## 1 Fall 2020          928          2178  3334.   3214         4480.    6758           1423. 
+    ## 2 Fall 2021         1045          1504  2547.   2218         2937     6200           1533. 
+    ## 3 Spring 2020        274           656. 1019.   1098.        1342.    2441            437. 
+    ## 4 Spring 2021        453          1775. 4188.   4022         6016.    9934           2463. 
+    ## 5 Summer 2020        156           257.  401.    332.         445.    1367            243. 
+    ## 6 Summer 2021        151           466. 1370.    890.        2172.    5018           1136. 
+    ## 7 Winter 2020          0             0    31.6     1            8.75   429             82.4
+    ## 8 Winter 2020-2021  1455          2724  4061.   3442         5333     8760           1741.
 
 Another thing I did with the COVID data for the `CA` dataset was to look
 at a contigency table for COVID cases by `less than 500`, `500-1000`,
@@ -324,19 +352,19 @@ added a new variable called `cases_range` that categorizes every COVID
 case in each of these ranges.
 
 ``` r
-CA <- CA %>%mutate(cases_range = case_when(Cases < 500~"less than 500",
-      Cases %in% 500:1000 ~ "500-1000",
-      Cases %in% 1001:2000~ "1000-2000",
-      Cases %in% 2001:3000~ "2000-3000",
-      Cases %in% 3001:4000~ "3000-4000",
-      Cases %in% 4001:6000~ "4000-6000",
-      Cases > 6000~ "6000+"))
-knitr::kable(table(CA$cases_range, CA$Period))
+Canada <- Canada %>%mutate(cases_range = case_when(Confirmed < 500~"less than 500",
+      Confirmed %in% 500:1000 ~ "500-1000",
+      Confirmed %in% 1001:2000~ "1000-2000",
+      Confirmed %in% 2001:3000~ "2000-3000",
+      Confirmed %in% 3001:4000~ "3000-4000",
+      Confirmed %in% 4001:6000~ "4000-6000",
+      Confirmed > 6000~ "6000+"))
+knitr::kable(table(Canada$cases_range, Canada$Period))
 ```
 
 |               | Fall 2020 | Fall 2021 | Spring 2020 | Spring 2021 | Summer 2020 | Summer 2021 | Winter 2020 | Winter 2020-2021 |
 |:--------------|----------:|----------:|------------:|------------:|------------:|------------:|------------:|-----------------:|
-| 1000-2000     |        16 |         4 |          50 |          14 |           5 |          19 |           0 |                3 |
+| 1000-2000     |        16 |         5 |          50 |          14 |           5 |          19 |           0 |                3 |
 | 2000-3000     |        25 |         4 |           2 |           5 |           0 |          18 |           0 |               31 |
 | 3000-4000     |        19 |         0 |           0 |          15 |           0 |           5 |           0 |               20 |
 | 4000-6000     |        26 |         1 |           0 |          24 |           0 |           3 |           0 |               21 |
@@ -344,18 +372,76 @@ knitr::kable(table(CA$cases_range, CA$Period))
 | 6000+         |         4 |         1 |           0 |          23 |           0 |           0 |           0 |               15 |
 | less than 500 |         0 |         0 |          16 |           2 |          75 |          26 |          56 |                0 |
 
-After creating the contigency table, I made a bar plot to summarize the
-contigency table graphically.
+After creating the contigency table, I made bar plots to summarize the
+contigency tables graphically.
 
 ``` r
-bar <- ggplot(data = CA, aes(x = cases_range))
-bar+geom_bar(aes(fill = as.factor(Period)), position = "dodge")+
+bar <- ggplot(data = Canada, aes(x = cases_range))
+bar+geom_bar(aes(fill = as.factor(Period)), position = "dodge", color = "black")+
   scale_x_discrete(labels = c("1000-2000", "2000-3000", "3000-4000", "4000-6000", "500-1000", "6000+", "less than 500"))+
   scale_fill_discrete(name = "Season/Period of pandemic", labels = c("Fall 2020", "Fall 2021", "Spring 2020", "Spring 2021", "Summer 2020", "Summer 2021", "Winter 2020", "Winter 2020-2021"))+
   theme(axis.text.x = element_text(angle = 30))
 ```
 
-![](Project1_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- --> I also
+created a contigency table and bar plot for confirmed cases by month
+during the pandemic for the `Canada` data.
+
+``` r
+knitr::kable(table(Canada$Month,Canada$cases_range))
+```
+
+|          | 1000-2000 | 2000-3000 | 3000-4000 | 4000-6000 | 500-1000 | 6000+ | less than 500 |
+|:---------|----------:|----------:|----------:|----------:|---------:|------:|--------------:|
+| Apr 2020 |        27 |         2 |         0 |         0 |        1 |     0 |             0 |
+| Apr 2021 |         0 |         0 |         3 |         7 |        0 |    20 |             0 |
+| Aug 2020 |         0 |         0 |         0 |         0 |        2 |     0 |            29 |
+| Aug 2021 |        14 |         8 |         3 |         0 |        5 |     0 |             1 |
+| Dec 2020 |         0 |         1 |         2 |        22 |        0 |     6 |             0 |
+| Feb 2020 |         0 |         0 |         0 |         0 |        0 |     0 |            30 |
+| Feb 2021 |         3 |        15 |         9 |         1 |        0 |     0 |             0 |
+| Jan 2020 |         0 |         0 |         0 |         0 |        0 |     0 |             5 |
+| Jan 2021 |         0 |         0 |         5 |        14 |        0 |    12 |             0 |
+| Jul 2020 |         0 |         0 |         0 |         0 |        1 |     0 |            30 |
+| Jul 2021 |         0 |         0 |         0 |         0 |        9 |     0 |            22 |
+| Jun 2020 |         0 |         0 |         0 |         0 |        6 |     0 |            24 |
+| Jun 2021 |        10 |         0 |         0 |         0 |       15 |     0 |             5 |
+| Mar 2020 |         3 |         0 |         0 |         0 |        6 |     0 |            22 |
+| Mar 2021 |         0 |        15 |        10 |         5 |        0 |     1 |             0 |
+| May 2020 |        20 |         0 |         0 |         0 |       11 |     0 |             0 |
+| May 2021 |         4 |         5 |         7 |        13 |        0 |     2 |             0 |
+| Nov 2020 |         0 |         3 |        17 |         9 |        0 |     1 |             0 |
+| Oct 2020 |         8 |        21 |         1 |         0 |        1 |     0 |             0 |
+| Sep 2020 |        13 |         1 |         0 |         0 |        9 |     0 |             7 |
+| Sep 2021 |        10 |        14 |         2 |         4 |        1 |     1 |             0 |
+
+From the contigency table, the month that got the highest number of
+daily cases on average was April 2021, likewise the months that got the
+lowest number of daily cases less than 500 were July and February of
+2020.
+
+I created a summary table for the 5-number summary for each month with
+regards to confirmed cases for Canada.
+
+``` r
+monthlysummary <- Canada  %>% group_by(Month) %>% summarise("Min." = min(Confirmed), "1st Quartile" = quantile(Confirmed,0.25,na.rm = TRUE), "Mean" =mean(Confirmed), "Median" = median(Confirmed), "3rd Quartile"= quantile(Confirmed,0.75,na.rm=TRUE), "Max." = max(Confirmed), "standard deviation." = sd(Confirmed))
+monthlysummary
+```
+
+    ## # A tibble: 21 x 8
+    ##    Month     Min. `1st Quartile`     Mean Median `3rd Quartile`  Max.
+    ##    <chr>    <int>          <dbl>    <dbl>  <dbl>          <dbl> <int>
+    ##  1 Apr 2020   977          1277. 1440.      1415          1485.  2441
+    ##  2 Apr 2021  3494          5894  6549.      6397          7370.  9934
+    ##  3 Aug 2020   156           230.  311.       260           381    594
+    ##  4 Aug 2021   215          1090. 1686.      1500          2220.  3818
+    ##  5 Dec 2020  2856          4514. 5215.      5038          5678.  7795
+    ##  6 Feb 2020     0             0     0.733      0             1      6
+    ##  7 Feb 2021  1455          2368  2763.      2747          3054   4134
+    ##  8 Jan 2020     0             0     0.6        0             1      2
+    ##  9 Jan 2021  3127          4267  5582.      5605          6390   8760
+    ## 10 Jul 2020   159           262.  308.       297           352.   603
+    ## # ... with 11 more rows, and 1 more variable: standard deviation. <dbl>
 
 Let’s now look at the relationship between cases and deaths for the
 state of Illinois in the United States. Let’s convert the total cases
@@ -383,6 +469,9 @@ for (i in min(row_number(Illinoisdata$Totalcases)):max(row_number(Illinoisdata$T
     Illinoisdata$Deaths[i] <- Illinoisdata$Deaths[i+1]-Illinoisdata$Deaths[i]
   }
 Illinoisdata <- na.omit(Illinoisdata)
+
+#create new variable that is the ratio of daily cases to total cases
+Illinoisdata <- Illinoisdata %>% mutate(caseratio =100* (Confirmed/sum(Confirmed)))
 ```
 
 I now will create a scatter plot for `Illinoisdata` to show what the
@@ -401,6 +490,47 @@ g+geom_point()+
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](Project1_files/figure-gfm/unnamed-chunk-17-1.png)<!-- --> From the
+![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- --> From the
 plot, it shows that there is a strong positive linear relationship
 between COVID-19 cases and COVID-19 deaths in Illinois.
+
+One other thing that I would like to look at a plot of is the same
+relationship but for different periods of the year for the `Canada`
+dataset to see if the same relationship is said for different seasons
+during the pandemic for the country of Canada.
+
+``` r
+g2<- ggplot(data = Canada, aes(x = Deaths, y = Confirmed))+geom_point()+
+  geom_smooth(method = "lm", color = "red")+
+  facet_wrap(~Period)
+g2
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- --> We see here
+that there is a strong positive relationship between confirmed COVID
+cases and deaths during almost every season of the pandemic except for
+the summer of 2020 where the relationship is close to zero. Spring 2021
+has the largest slope.
+
+Another thing that was made in the data set `Illinoisdata` was the
+variable `caseratio` which is the ratio of daily cases in Illinois over
+the past few months to the total number of cases over the past few
+months.
+
+I constructed a histogram of the values. Note that these are all
+percents.
+
+``` r
+hist <- ggplot(data = Illinoisdata, aes(x = caseratio))
+hist+ geom_histogram( stat = "bin", fill = "Red", color = "black", binwidth = 0.3)+
+  labs(x = "Ratio of cases to total cases over last few months(%)", title = "Histogram of COVID cases to total cases over last few months in Illinois",y = "Frequency")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- --> From the
+histogram, we can see that Illinois did have a large amount of days over
+the past few months with a very small case ratio to total cases over the
+past few months but also had a few outlying days with a large ratio
+along with the fact that the data is highly skewed right and appears
+exponential.
