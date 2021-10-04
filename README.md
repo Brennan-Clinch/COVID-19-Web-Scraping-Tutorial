@@ -300,7 +300,7 @@ g <- ggplot(data = Canada, aes(x = Confirmed))
 g+geom_boxplot()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](unnamed-chunk-11-1.png)
 
 ``` r
 g <- ggplot(data = Canada, aes(x = Period, y = Confirmed))
@@ -310,8 +310,9 @@ g+geom_point(aes(col = Confirmed), position = "jitter", size = 1)+
   labs(title = "Boxplots for Covid cases in Canada for each season")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-11-2.png)<!-- --> Based on the
-2 boxplots, it is clearly shown that for the total distribution of
+![](unnamed-chunk-11-2.png)
+
+Based on the 2 boxplots, it is clearly shown that for the total distribution of
 COVID-19 cases in Canada, it is noted that the distribution of cases
 over the whole pandemic is skewed a little to the right with some
 outlying daily cases over 7500 and close to 10000. For the 2nd plot with
@@ -383,7 +384,7 @@ bar+geom_bar(aes(fill = as.factor(Period)), position = "dodge", color = "black")
   theme(axis.text.x = element_text(angle = 30))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- --> I also
+![](unnamed-chunk-14-1.png) I also
 created a contigency table and bar plot for confirmed cases by month
 during the pandemic for the `Canada` data.
 
@@ -490,8 +491,9 @@ g+geom_point()+
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- --> From the
-plot, it shows that there is a strong positive linear relationship
+![](unnamed-chunk-18-1.png)
+
+From the plot, it shows that there is a strong positive linear relationship
 between COVID-19 cases and COVID-19 deaths in Illinois.
 
 One other thing that I would like to look at a plot of is the same
@@ -508,8 +510,9 @@ g2
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- --> We see here
-that there is a strong positive relationship between confirmed COVID
+![](unnamed-chunk-19-1.png)
+
+We see here that there is a strong positive relationship between confirmed COVID
 cases and deaths during almost every season of the pandemic except for
 the summer of 2020 where the relationship is close to zero. Spring 2021
 has the largest slope.
@@ -528,8 +531,9 @@ hist+ geom_histogram( stat = "bin", fill = "Red", color = "black", binwidth = 0.
   labs(x = "Ratio of cases to total cases over last few months(%)", title = "Histogram of COVID cases to total cases over last few months in Illinois",y = "Frequency")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- --> From the
-histogram, we can see that Illinois did have a large amount of days over
+![](unnamed-chunk-20-1.png)
+
+From the histogram, we can see that Illinois did have a large amount of days over
 the past few months with a very small case ratio to total cases over the
 past few months but also had a few outlying days with a large ratio
 along with the fact that the data is highly skewed right and appears
