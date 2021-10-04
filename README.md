@@ -384,8 +384,9 @@ bar+geom_bar(aes(fill = as.factor(Period)), position = "dodge", color = "black")
   theme(axis.text.x = element_text(angle = 30))
 ```
 
-![](unnamed-chunk-14-1.png) I also
-created a contigency table and bar plot for confirmed cases by month
+![](unnamed-chunk-14-1.png) 
+
+I also created a contigency table and bar plot for confirmed cases by month
 during the pandemic for the `Canada` data.
 
 ``` r
