@@ -6,7 +6,7 @@ Brennan Clinch
 ## Introduction
 
 For this vignette, we want to give a tutorial on summarizing financial
-data from an API. For starters, an API is a connection between computers
+data from an API. For starters, an API is a connection between computerss
 or between computer programs, which can also be called a software
 interface. (“<https://en.wikipedia.org/wiki/API>”). API’s are an
 important source for retrieving data and working with it, especially in
