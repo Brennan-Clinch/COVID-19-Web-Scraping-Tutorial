@@ -24,7 +24,7 @@ packages were required.
 
 \-`jsonlite: this is one package used to read API files, which is basically a json parsor and generator`
 
-`httr: another API package used which gives tools for working with urls and http`
+\-`httr: another API package used which gives tools for working with urls and http`
 
 ## Functions used for contacting our API
 
