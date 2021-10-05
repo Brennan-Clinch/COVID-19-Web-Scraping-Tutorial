@@ -64,18 +64,19 @@ for data since the beginning of the COVID-19 pandemic for either
 recovered or confirmed cases by typing in what I want in
 parentheses(`confirmed` or `recovered` or `deaths`) after calling the
 function. If I don’t type in anything it returns the whole data frame
-with `confirmed`, `recovered`, and `deaths`.f
+with `confirmed`, `recovered`, and `deaths` for Canada
 
 ``` r
-dayonestatus <- function(type = "all"){
+dayonestatus <- function(country = "all" ,type = "all"){
   if (type != "all" & type %in% c("recovered", "deaths", "confirmed")){
-  baseurl <- "https://api.covid19api.com/dayone/country/canada"
-  fullURL <- paste0(baseurl, "/status/", type)
+  baseurl <- "https://api.covid19api.com/dayone/country/"
+  fullURL <- paste0(baseurl,country, "/status/", type)
   output <- fromJSON(fullURL)
   }
-  else if (type == "all"){
-    baseurl <- "https://api.covid19api.com/dayone/country/canada"
-    output <- fromJSON(baseurl)
+  else if (type == "all" & country != "all"){
+    baseurl <- "https://api.covid19api.com/dayone/country/"
+    fullURL <- paste0(baseurl,country)
+    output <- fromJSON(fullURL)
   }
   else{
     stop("Error: Please specify area of interest for COVID.")
@@ -209,7 +210,7 @@ COVIDapi <- function(func, ...){
     output <- Illinoistype(type = c("Confirmed", "Deaths"))
   }
   else if (func == "dayonestatus"){
-    output <- dayonestatus(type = "all")
+    output <- dayonestatus(type = "all", country = "canada")
   }
   else if (func == "countrydic"){
     output <- countrydic(...)
@@ -225,7 +226,7 @@ COVIDapi <- function(func, ...){
 }
 ```
 
-\#Exploratory data analysis
+\#\#Exploratory data analysis
 
 Let’s first look at a numeric summary of our periodical data for each
 season for Canada. Note that we must first convert the Total number of
@@ -300,7 +301,7 @@ g <- ggplot(data = Canada, aes(x = Confirmed))
 g+geom_boxplot()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 ``` r
 g <- ggplot(data = Canada, aes(x = Period, y = Confirmed))
@@ -310,7 +311,7 @@ g+geom_point(aes(col = Confirmed), position = "jitter", size = 1)+
   labs(title = "Boxplots for Covid cases in Canada for each season")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-11-2.png)<!-- --> Based on the
+![](README_files/figure-gfm/unnamed-chunk-15-2.png)<!-- --> Based on the
 2 boxplots, it is clearly shown that for the total distribution of
 COVID-19 cases in Canada, it is noted that the distribution of cases
 over the whole pandemic is skewed a little to the right with some
@@ -331,18 +332,6 @@ of cases since it’s standard deviation was so high.
 summary <- Canada  %>% group_by(Period) %>% summarise("Min." = min(Confirmed), "1st Quartile" = quantile(Confirmed,0.25,na.rm = TRUE), "Mean" =mean(Confirmed), "Median" = median(Confirmed), "3rd Quartile"= quantile(Confirmed,0.75,na.rm=TRUE), "Max." = max(Confirmed), "standard deviation." = sd(Confirmed))
 summary
 ```
-
-    ## # A tibble: 8 x 8
-    ##   Period            Min. `1st Quartile`   Mean Median `3rd Quartile`  Max. `standard devia~
-    ##   <chr>            <int>          <dbl>  <dbl>  <dbl>          <dbl> <int>            <dbl>
-    ## 1 Fall 2020          928          2178  3334.   3214         4480.    6758           1423. 
-    ## 2 Fall 2021         1045          1504  2547.   2218         2937     6200           1533. 
-    ## 3 Spring 2020        274           656. 1019.   1098.        1342.    2441            437. 
-    ## 4 Spring 2021        453          1775. 4188.   4022         6016.    9934           2463. 
-    ## 5 Summer 2020        156           257.  401.    332.         445.    1367            243. 
-    ## 6 Summer 2021        151           466. 1370.    890.        2172.    5018           1136. 
-    ## 7 Winter 2020          0             0    31.6     1            8.75   429             82.4
-    ## 8 Winter 2020-2021  1455          2724  4061.   3442         5333     8760           1741.
 
 Another thing I did with the COVID data for the `CA` dataset was to look
 at a contigency table for COVID cases by `less than 500`, `500-1000`,
@@ -367,7 +356,7 @@ knitr::kable(table(Canada$cases_range, Canada$Period))
 | 1000-2000     |        16 |         5 |          50 |          14 |           5 |          19 |           0 |                3 |
 | 2000-3000     |        25 |         4 |           2 |           5 |           0 |          18 |           0 |               31 |
 | 3000-4000     |        19 |         0 |           0 |          15 |           0 |           5 |           0 |               20 |
-| 4000-6000     |        26 |         1 |           0 |          24 |           0 |           3 |           0 |               21 |
+| 4000-6000     |        26 |         2 |           0 |          24 |           0 |           3 |           0 |               21 |
 | 500-1000      |         1 |         0 |          24 |           9 |          12 |          21 |           0 |                0 |
 | 6000+         |         4 |         1 |           0 |          23 |           0 |           0 |           0 |               15 |
 | less than 500 |         0 |         0 |          16 |           2 |          75 |          26 |          56 |                0 |
@@ -383,9 +372,11 @@ bar+geom_bar(aes(fill = as.factor(Period)), position = "dodge", color = "black")
   theme(axis.text.x = element_text(angle = 30))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- --> I also
-created a contigency table and bar plot for confirmed cases by month
-during the pandemic for the `Canada` data.
+![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+I also created a contigency table and bar plot for the number of
+confirmed cases in specific ranges by month during the pandemic for the
+`Canada` data.
 
 ``` r
 knitr::kable(table(Canada$Month,Canada$cases_range))
@@ -413,7 +404,18 @@ knitr::kable(table(Canada$Month,Canada$cases_range))
 | Nov 2020 |         0 |         3 |        17 |         9 |        0 |     1 |             0 |
 | Oct 2020 |         8 |        21 |         1 |         0 |        1 |     0 |             0 |
 | Sep 2020 |        13 |         1 |         0 |         0 |        9 |     0 |             7 |
-| Sep 2021 |        10 |        14 |         2 |         4 |        1 |     1 |             0 |
+| Sep 2021 |        10 |        14 |         2 |         5 |        1 |     1 |             0 |
+
+``` r
+bar2 <- ggplot(data = Canada, aes(x = cases_range))
+bar2+geom_bar(aes(fill=as.factor(Month)), position = "dodge", color = "black")+
+  scale_x_discrete(labels = c("1000-2000", "2000-3000","3000-4000","4000-6000","500-1000","6000+","less than 500"))+
+scale_fill_discrete(name = "Month")+
+theme(axis.text.x = element_text(angle = 30))+
+  labs(title = "Bar plot of range of COVID cases by month", x = "Month")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 From the contigency table, the month that got the highest number of
 daily cases on average was April 2021, likewise the months that got the
@@ -428,21 +430,6 @@ monthlysummary <- Canada  %>% group_by(Month) %>% summarise("Min." = min(Confirm
 monthlysummary
 ```
 
-    ## # A tibble: 21 x 8
-    ##    Month     Min. `1st Quartile`     Mean Median `3rd Quartile`  Max.
-    ##    <chr>    <int>          <dbl>    <dbl>  <dbl>          <dbl> <int>
-    ##  1 Apr 2020   977          1277. 1440.      1415          1485.  2441
-    ##  2 Apr 2021  3494          5894  6549.      6397          7370.  9934
-    ##  3 Aug 2020   156           230.  311.       260           381    594
-    ##  4 Aug 2021   215          1090. 1686.      1500          2220.  3818
-    ##  5 Dec 2020  2856          4514. 5215.      5038          5678.  7795
-    ##  6 Feb 2020     0             0     0.733      0             1      6
-    ##  7 Feb 2021  1455          2368  2763.      2747          3054   4134
-    ##  8 Jan 2020     0             0     0.6        0             1      2
-    ##  9 Jan 2021  3127          4267  5582.      5605          6390   8760
-    ## 10 Jul 2020   159           262.  308.       297           352.   603
-    ## # ... with 11 more rows, and 1 more variable: standard deviation. <dbl>
-
 Let’s now look at the relationship between cases and deaths for the
 state of Illinois in the United States. Let’s convert the total cases
 and deaths to cases for each row (by date). We also deleted the last row
@@ -453,6 +440,14 @@ deaths using the same idea as before with the confirmed cases.
 
 ``` r
 Illinoisdata <- COVIDapi("Illinoistype")
+```
+
+    ## Note: Using an external vector in selections is ambiguous.
+    ## i Use `all_of(type)` instead of `type` to silence this message.
+    ## i See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
+    ## This message is displayed once per session.
+
+``` r
 Illinoisdata <- Illinoisdata %>% mutate(Totalcases = Confirmed)
 
  for (i in min(row_number(Illinoisdata$Confirmed)):max(row_number(Illinoisdata$Confirmed))){
@@ -471,7 +466,7 @@ for (i in min(row_number(Illinoisdata$Totalcases)):max(row_number(Illinoisdata$T
 Illinoisdata <- na.omit(Illinoisdata)
 
 #create new variable that is the ratio of daily cases to total cases
-Illinoisdata <- Illinoisdata %>% mutate(caseratio =100* (Confirmed/sum(Confirmed)))
+Illinoisdata <- Illinoisdata %>% mutate(casedeathratio = (Confirmed/Deaths))
 ```
 
 I now will create a scatter plot for `Illinoisdata` to show what the
@@ -490,7 +485,7 @@ g+geom_point()+
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- --> From the
+![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- --> From the
 plot, it shows that there is a strong positive linear relationship
 between COVID-19 cases and COVID-19 deaths in Illinois.
 
@@ -508,11 +503,12 @@ g2
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- --> We see here
-that there is a strong positive relationship between confirmed COVID
-cases and deaths during almost every season of the pandemic except for
-the summer of 2020 where the relationship is close to zero. Spring 2021
-has the largest slope.
+![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+
+We see here that there is a strong positive relationship between
+confirmed COVID cases and deaths during almost every season of the
+pandemic except for the summer of 2020 where the relationship is close
+to zero. Spring 2021 has the largest slope.
 
 Another thing that was made in the data set `Illinoisdata` was the
 variable `caseratio` which is the ratio of daily cases in Illinois over
@@ -523,12 +519,14 @@ I constructed a histogram of the values. Note that these are all
 percents.
 
 ``` r
-hist <- ggplot(data = Illinoisdata, aes(x = caseratio))
+hist <- ggplot(data = Illinoisdata, aes(x = casedeathratio))
 hist+ geom_histogram( stat = "bin", fill = "Red", color = "black", binwidth = 0.3)+
   labs(x = "Ratio of cases to total cases over last few months(%)", title = "Histogram of COVID cases to total cases over last few months in Illinois",y = "Frequency")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- --> From the
+    ## Warning: Removed 33 rows containing non-finite values (stat_bin).
+
+![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- --> From the
 histogram, we can see that Illinois did have a large amount of days over
 the past few months with a very small case ratio to total cases over the
 past few months but also had a few outlying days with a large ratio
