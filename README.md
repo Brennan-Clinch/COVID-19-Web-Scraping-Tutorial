@@ -1,3 +1,5 @@
+    
+=======
 API Interaction: COVID-19
 ================
 Brennan Clinch
@@ -536,3 +538,4 @@ the past few months with a very small case ratio to total cases over the
 past few months but also had a few outlying days with a large ratio
 along with the fact that the data is highly skewed right and appears
 exponential.
+
