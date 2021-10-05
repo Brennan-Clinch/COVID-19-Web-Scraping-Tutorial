@@ -485,7 +485,9 @@ g+geom_point()+
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- --> From the
+![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- --> 
+
+From the
 plot, it shows that there is a strong positive linear relationship
 between COVID-19 cases and COVID-19 deaths in Illinois.
 
@@ -526,7 +528,9 @@ hist+ geom_histogram( stat = "bin", fill = "Red", color = "black", binwidth = 0.
 
     ## Warning: Removed 33 rows containing non-finite values (stat_bin).
 
-![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- --> From the
+![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- --> 
+
+From the
 histogram, we can see that Illinois did have a large amount of days over
 the past few months with a very small case ratio to total cases over the
 past few months but also had a few outlying days with a large ratio
