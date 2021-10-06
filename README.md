@@ -1,10 +1,8 @@
-    
-=======
 API Interaction: COVID-19
 ================
 Brennan Clinch
 10/4/2021
-
+--
 ## Introduction
 
 For this vignette, we want to give a tutorial on summarizing financial
