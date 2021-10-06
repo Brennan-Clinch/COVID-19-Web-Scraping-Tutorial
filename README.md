@@ -571,7 +571,7 @@ to zero. Spring 2021 has the largest slope.
 
 I now wanted to look at the relationship between cases and deaths for
 the state of Illinois in the United States with the data from the
-`Illinoistype` function. Let’s convert the total cases and deaths to
+`USlive` function. Let’s convert the total cases and deaths to
 cases for each row (by date). We also deleted the last row of data since
 we didn’t know the number of cases for the first record since it only
 gave us the total number of cases overall. I also made a loop converting
