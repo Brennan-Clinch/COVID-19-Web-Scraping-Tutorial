@@ -368,7 +368,7 @@ g+geom_boxplot()+
   labs(title = "Boxplot of COVID cases for Canada of overall pandemic")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ``` r
 #Create boxplot of the distribution of confirmed cases in Canada based on the Season of the Pandemic
@@ -379,7 +379,7 @@ g+geom_point(aes(col = Confirmed), position = "jitter", size = 1)+
   labs(title = "Boxplots for Covid cases in Canada for each season")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-14-2.png)<!-- --> Based on the
+![](README_files/figure-gfm/unnamed-chunk-12-2.png)<!-- --> Based on the
 2 boxplots, it is clearly shown that for the total distribution of
 COVID-19 cases in Canada, it is noted that the distribution of cases
 over the whole pandemic is skewed a little to the right with some
@@ -455,7 +455,7 @@ bar+geom_bar(aes(fill = as.factor(Period)), position = "dodge", color = "black")
   labs(x = "Cases category", title = "Bar plot of Confirmed cases category based on season for Canada")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 I also created a contingency table and bar plot for the number of
 confirmed cases in specific ranges by month during the pandemic for the
@@ -502,7 +502,7 @@ theme(axis.text.x = element_text(angle = 30))+
   labs(title = "Bar plot of range of COVID cases by month for Canada", x = "Month")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 From the contingency table, the month that got the highest number of
 daily cases on average was April 2021, likewise the months that got the
@@ -560,7 +560,7 @@ g2<- ggplot(data = Canada, aes(x = Deaths, y = Confirmed))+geom_point()+
 g2
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
 We see here that there is a strong positive relationship between
 confirmed COVID cases and deaths during almost every season of the
@@ -617,7 +617,7 @@ g+geom_point()+
   labs(title = "Daily Confirmed COVID Cases vs COVID Deaths in Illinois")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- --> From the
+![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- --> From the
 plot, it shows that there is a strong positive linear relationship
 between COVID-19 cases and COVID-19 deaths in Illinois. So the more
 cases we had, the more deaths we had on average from COVID-19.
@@ -661,7 +661,7 @@ hist+ geom_histogram( stat = "bin", fill = "Red", color = "black")+
   labs(x = "Ratio of cases to deaths on a daily basis", title = "Histogram of COVID cases/deaths over last few months in Illinois",y = "Frequency")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- --> From the
+![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- --> From the
 histogram, we can see that Illinois did have a large amount of days over
 the past few months with a small case to death ratio but also had a few
 days where the ratio was really high as noted here with some values
