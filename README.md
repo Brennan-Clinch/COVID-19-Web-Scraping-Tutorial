@@ -380,8 +380,9 @@ g+geom_point(aes(col = Confirmed), position = "jitter", size = 1)+
   labs(title = "Boxplots for Covid cases in Canada for each season")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-12-2.png)<!-- --> Based on the
-2 boxplots, it is clearly shown that for the total distribution of
+![](README_files/figure-gfm/unnamed-chunk-12-2.png)<!-- -->
+
+Based on the 2 boxplots, it is clearly shown that for the total distribution of
 COVID-19 cases in Canada, it is noted that the distribution of cases
 over the whole pandemic is skewed a little to the right with some
 outlying daily cases over 7500 and close to 10000. For the 2nd plot with
@@ -618,8 +619,9 @@ g+geom_point()+
   labs(title = "Daily Confirmed COVID Cases vs COVID Deaths in Illinois")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- --> From the
-plot, it shows that there is a strong positive linear relationship
+![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- --> 
+
+From the plot, it shows that there is a strong positive linear relationship
 between COVID-19 cases and COVID-19 deaths in Illinois. So the more
 cases we had, the more deaths we had on average from COVID-19.
 
@@ -662,8 +664,9 @@ hist+ geom_histogram( stat = "bin", fill = "Red", color = "black")+
   labs(x = "Ratio of cases to deaths on a daily basis", title = "Histogram of COVID cases/deaths over last few months in Illinois",y = "Frequency")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- --> From the
-histogram, we can see that Illinois did have a large amount of days over
+![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- --> 
+
+From the histogram, we can see that Illinois did have a large amount of days over
 the past few months with a small case to death ratio but also had a few
 days where the ratio was really high as noted here with some values
 greater than 400.
