@@ -280,7 +280,7 @@ COVIDapi <- function(func, ...){
 }
 ```
 
-\#\#Exploratory data analysis
+## Exploratory data analysis
 
 Now that we have functions that can interact with our COVID-19 API and
 query what we want, let’s work with some of the functions we have
