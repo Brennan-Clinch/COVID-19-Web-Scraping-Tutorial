@@ -43,7 +43,7 @@ data visualization, manipulation, and analysis
 basically a json parser and generator
 
 \-`httr`: another API package used which gives tools for working with
-urls and http\`
+urls and http
 
 \-`purrr`: Functional programming tools
 
