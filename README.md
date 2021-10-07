@@ -364,6 +364,7 @@ COVIDapi <- function(func, ...){
 }
 ```
 
+
 # Exploratory data analysis
 
 Now that we have functions that can interact with our COVID-19 API and
