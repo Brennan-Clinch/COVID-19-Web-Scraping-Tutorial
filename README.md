@@ -37,15 +37,15 @@ packages were required. Without these, we cannot contact our API or be
 able to do data analysis with it.
 
 \-`tidyverse`: an R package for data science, with tons of tools for
-data visualization, manipulation, and analysis\`
+data visualization, manipulation, and analysis
 
 \-`jsonlite`: this is one package used to read API files, which is
-basically a json parser and generator\`
+basically a json parser and generator
 
 \-`httr`: another API package used which gives tools for working with
-urls and http\`
+urls and http
 
-\-`purrr`: Functional programming tools\`
+\-`purrr`: Functional programming tools
 
 Note: This was only used to create my null object used to return an
 error in the `countrydic` function in the next section.
